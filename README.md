@@ -116,7 +116,7 @@ Before running the project, ensure the following software is installed:
 ### 1. Clone or Download the Project
 
 ```bash
-git clone https://github.com/yourusername/pharmacy-product-management-system.git
+git clone https://github.com/AndreiOchangco/pharmacy-product-management-system.git
 ```
 
 Or download and extract the source code ZIP file.
