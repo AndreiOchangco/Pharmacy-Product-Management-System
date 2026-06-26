@@ -9,22 +9,22 @@ include 'topbar.php';
 		$username_db = $_POST['txtusername'];
 		$password_db = $_POST['txtpassword'];
 		$dbname_db = $_POST['txtdbname'];
+		$task= $fullname.' '.'Backup database'.' '. 'On' . ' '.$current_date;
+		$query2 = "INSERT into `activity_log` (task)
+		VALUES ('$task')";
+		$result2 = mysqli_query($conn,$query2);
 
 		//backup and dl using our function
 		backDb($servername_db, $username_db, $password_db, $dbname_db);
 
+
+		$_SESSION['success'] ="Database backup successfully";
 		exit();
 
 
 
 
 
-$task= $fullname.' '.'Backup database'.' '. 'On' . ' '.$current_date;
-$query2 = "INSERT into `activity_log` (task)
-VALUES ('$task')";
-$result2 = mysqli_query($conn,$query2);
-
-$_SESSION['success'] ="Database backup successfully";
 
 }
 ?>
