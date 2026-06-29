@@ -138,14 +138,17 @@ $_SESSION['error']=' Wrong Email and Password';
 </div>
 <?php unset($_SESSION["success"]);  
 } ?>
-<?php if(!empty($_SESSION['error'])) {  ?>
+<?php if(empty($_SESSION['error'])) {  ?>
 <div class="popup popup--icon -error js_error-popup popup--visible">
   <div class="popup__background"></div>
   <div class="popup__content">
     <h3 class="popup__content__title">
       <strong>Error</strong> 
     </h1>
-    <p><?php echo $_SESSION['error']; ?></p>
+    <p><?php 
+     $_SESSION['error'] = "Invalid SMTP Credentials";
+     echo $_SESSION['error']; ?>
+     </p>
     <p>
       <button class="button button--error" data-for="js_error-popup">Close</button>
     </p>

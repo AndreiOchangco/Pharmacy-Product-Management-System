@@ -8,6 +8,6 @@
 -->
 </style>
  <div class="footer">
-          <div class="style1"> <p align="center" class="style2"> Copyright &copy; <?php echo date('Y'); ?> | Monday, Goodness |H/F2021/COM/001 | Design and Implementation of a Product Expiry Alert Management System | </p>
+          <div class="style1"> <p align="center" class="style2"> Copyright &copy; <?php echo date('Y'); ?> | Pharmacy Stock Expiry Alert Management System </p>
 </div>
 </div>

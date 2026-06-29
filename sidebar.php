@@ -109,7 +109,7 @@
           <li class="nav-item">
             <a href="#" class="nav-link">
               <p>
-               Stock In Management
+               Stock Management
                 <i class="fas fa-angle-left right"></i>
               </p>
             </a>
@@ -154,13 +154,6 @@
               <p>
               Logout
               </p>
-            </a>
-          </li>	
-		
-          <li class="nav-item">
-            <a href="../index.php" class="nav-link">
-       <i class='fas fa-exchange-alt' style='font-size:18px;color:red'></i>
-                 <p class="text">Switch To Student</p>
             </a>
           </li>	
 				 <p class="text"></p>
