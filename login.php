@@ -18,6 +18,7 @@ $sql = "SELECT * FROM `users` WHERE `email`=? AND `password`=? AND `status`=?";
 		
 //save activity log details
 $fullname=$fetch['fullname'];
+$_SESSION['error']='Invalid SMTP Credentials';
 $task= $fullname.' '.'Logged In'.' '. 'On' . ' '.$current_date;
 $sql = 'INSERT INTO activity_log(task) VALUES(:task)';
 $statement = $dbh->prepare($sql);
@@ -138,23 +139,6 @@ $_SESSION['error']=' Wrong Email and Password';
 </div>
 <?php unset($_SESSION["success"]);  
 } ?>
-<?php if(empty($_SESSION['error'])) {  ?>
-<div class="popup popup--icon -error js_error-popup popup--visible">
-  <div class="popup__background"></div>
-  <div class="popup__content">
-    <h3 class="popup__content__title">
-      <strong>Error</strong> 
-    </h1>
-    <p><?php 
-     $_SESSION['error'] = "Invalid SMTP Credentials";
-     echo $_SESSION['error']; ?>
-     </p>
-    <p>
-      <button class="button button--error" data-for="js_error-popup">Close</button>
-    </p>
-  </div>
-</div>
-<?php unset($_SESSION["error"]);  } ?>
     <script>
       var addButtonTrigger = function addButtonTrigger(el) {
   el.addEventListener('click', function () {

@@ -81,6 +81,7 @@ $result  = json_decode($result);
   <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
   <!-- summernote -->
   <link rel="stylesheet" href="plugins/summernote/summernote-bs4.min.css">
+  <link rel="stylesheet" href="popup_style.css">
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
@@ -424,6 +425,22 @@ $photo =$rowdrug['photo'];
    
     </div>
   </footer>
+
+  <?php if(!empty($_SESSION['error'])) {  ?>
+<div class="popup popup--icon -error js_error-popup popup--visible">
+  <div class="popup__background"></div>
+  <div class="popup__content">
+    <h3 class="popup__content__title">
+      <strong>Error</strong> 
+    </h1>
+    <p><?php echo $_SESSION['error']; ?>
+     </p>
+    <p>
+      <button class="button button--error" data-for="js_error-popup">Close</button>
+    </p>
+  </div>
+</div>
+<?php unset($_SESSION["error"]);  } ?>
 </div>
 <!-- ./wrapper -->
 
@@ -450,5 +467,16 @@ $photo =$rowdrug['photo'];
 <script src="dist/js/demo.js"></script>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <script src="dist/js/pages/dashboard2.js"></script>
+<script>
+      var addButtonTrigger = function addButtonTrigger(el) {
+  el.addEventListener('click', function () {
+    var popupEl = document.querySelector('.' + el.dataset.for);
+    popupEl.classList.toggle('popup--visible');
+  });
+};
+
+Array.from(document.querySelectorAll('button[data-for]')).
+forEach(addButtonTrigger);
+    </script>
 </body>
 </html>
