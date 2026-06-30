@@ -13,8 +13,8 @@ $stmt = $dbh->query("SELECT * FROM users where email='$email'");
 $row_user = $stmt->fetch();
 
  
-if(isset($_POST["btnsave"]))
-{
+ if(isset($_POST["btnsave"]))
+ {
 
 $product_name = $_POST['txtproduct_name'];
 $category = $_POST['cmdcategory'];
@@ -37,49 +37,108 @@ function GenerateproductID() {
 $productID= GenerateproductID();
 
 
-$file_type = $_FILES['avatar']['type']; //returns the mimetype
-$allowed = array("image/jpg","image/jpeg","image/png");
-if(!in_array($file_type, $allowed)) {
-$_SESSION['error'] ='Only jpg,jpeg and png files are allowed. ';
+// Enhanced file upload validation
+$upload_error = '';
+$file = $_FILES['avatar'];
 
-// exit();
-
-}else{
-$image= addslashes(file_get_contents($_FILES['avatar']['tmp_name']));
-$image_name= addslashes($_FILES['avatar']['name']);
-$image_size= getimagesize($_FILES['avatar']['tmp_name']);
-move_uploaded_file($_FILES["avatar"]["tmp_name"],"uploadImage/" . $_FILES["avatar"]["name"]);			
-$location="uploadImage/" . $_FILES["avatar"]["name"];
-
-
-///check if product already exist
-$stmt = $dbh->prepare("SELECT * FROM tblproduct WHERE product_name=? and category=?");
-$stmt->execute([$product_name,$category]); 
-$row_product = $stmt->fetch();
-
-
-if ($row_product) {
-$_SESSION['error'] ='product Already Exist in our Database ';
-
+// Check if file was uploaded
+if($file['error'] !== UPLOAD_ERR_OK) {
+    $upload_error = 'File upload failed. Please try again.';
 } else {
- //Add course details
-$sql = 'INSERT INTO tblproduct(productID,product_name,category,expirydate,qty,price,photo) VALUES(:productID,:product_name,:category,:expirydate,:qty,:price,:photo)';
-$statement = $dbh->prepare($sql);
-$statement->execute([
-  ':productID' => $productID,
-	':product_name' => $product_name,
-	':category' => $category,
-  ':expirydate' => $expirydate,
-	':qty' => $qty,
-  ':price' => $price,
-  ':photo' => $location
-]);
-if ($statement){
-	$_SESSION['success'] ='Product Added Successfully';
-}else{
-  $_SESSION['error'] ='Problem Adding Product';
+    // Get file information
+    $file_name = $file['name'];
+    $file_type = $file['type'];
+    $file_size = $file['size'];
+    $file_tmp = $file['tmp_name'];
+    $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+    
+    // Define allowed extensions and MIME types
+    $allowed_extensions = array('jpg', 'jpeg', 'png', 'gif', 'webp');
+    $allowed_mime_types = array('image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp');
+    
+    // Check for dangerous file extensions (system files, executables, scripts)
+    $dangerous_extensions = array('php', 'php3', 'php4', 'php5', 'phtml', 'htaccess', 'htpasswd', 
+                                   'exe', 'bat', 'cmd', 'com', 'sh', 'js', 'vbs', 'asp', 'aspx', 
+                                   'jsp', 'py', 'pl', 'cgi', 'dll', 'sys', 'ini', 'conf', 'log');
+    
+    // Validate file extension
+    if(!in_array($file_ext, $allowed_extensions)) {
+        $upload_error = 'Invalid file type. Only JPG, JPEG, PNG, GIF, and WEBP files are allowed.';
+    }
+    // Check for dangerous extensions
+    elseif(in_array($file_ext, $dangerous_extensions)) {
+        $upload_error = 'Security Error: System files and executable files are not allowed.';
+        error_log("Security Alert: Attempted upload of dangerous file: " . $file_name . " by user: " . $email);
+    }
+    // Validate MIME type
+    elseif(!in_array($file_type, $allowed_mime_types)) {
+        $upload_error = 'Invalid file format. The file type does not match the extension.';
+    }
+    // Validate file size (max 5MB)
+    elseif($file_size > 5242880) {
+        $upload_error = 'File size too large. Maximum allowed size is 5MB.';
+    }
+    // Verify it's actually an image using getimagesize
+    elseif(getimagesize($file_tmp) === false) {
+        $upload_error = 'Invalid image file. The file appears to be corrupted or not a valid image.';
+    }
+    // Check for system files by name
+    elseif(preg_match('/^\./', $file_name)) {
+        $upload_error = 'System files (hidden files) are not allowed.';
+    }
+    // Check for double extensions
+    elseif(preg_match('/\.(php|php3|php4|php5|phtml|exe|bat|cmd|com|sh|js|vbs|asp|aspx|jsp|py|pl|cgi)\./i', $file_name)) {
+        $upload_error = 'Security Error: Files with multiple extensions are not allowed.';
+        error_log("Security Alert: Attempted upload of file with multiple extensions: " . $file_name . " by user: " . $email);
+    }
+    else {
+        // All validations passed, proceed with upload
+        $image= addslashes(file_get_contents($file_tmp));
+        $image_name= addslashes($file_name);
+        $image_size= getimagesize($file_tmp);
+        
+        // Generate unique filename to prevent overwriting
+        $new_filename = uniqid() . '_' . time() . '.' . $file_ext;
+        $upload_path = "uploadImage/" . $new_filename;
+        
+        if(move_uploaded_file($file_tmp, $upload_path)) {
+            $location = $upload_path;
+        } else {
+            $upload_error = 'Failed to upload file. Please try again.';
+        }
+    }
 }
-}
+
+if(!empty($upload_error)) {
+    $_SESSION['error'] = $upload_error;
+    // Don't proceed with database operations if upload failed
+} else {
+    ///check if product already exist
+    $stmt = $dbh->prepare("SELECT * FROM tblproduct WHERE product_name=? and category=?");
+    $stmt->execute([$product_name,$category]); 
+    $row_product = $stmt->fetch();
+
+    if ($row_product) {
+        $_SESSION['error'] ='Product already exists in our database.';
+    } else {
+        // Add product details
+        $sql = 'INSERT INTO tblproduct(productID,product_name,category,expirydate,qty,price,photo) VALUES(:productID,:product_name,:category,:expirydate,:qty,:price,:photo)';
+        $statement = $dbh->prepare($sql);
+        $statement->execute([
+            ':productID' => $productID,
+            ':product_name' => $product_name,
+            ':category' => $category,
+            ':expirydate' => $expirydate,
+            ':qty' => $qty,
+            ':price' => $price,
+            ':photo' => $location
+        ]);
+        if ($statement){
+            $_SESSION['success'] ='Product Added Successfully';
+        } else {
+            $_SESSION['error'] ='Problem Adding Product';
+        }
+    }
 }
 }
 ?>
