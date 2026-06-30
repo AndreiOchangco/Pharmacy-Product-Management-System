@@ -35,8 +35,8 @@ $expiring_stock= $Expired['qty'];
 $expiring_productID= $Expired['productID'];
 
  //send sms alert
-$username='info.autosyst@yahoo.comxxxx';//Note: urlencodemust be added forusernameand 
-$password='Integax@2022xxxx';// passwordas encryption code for security purpose.
+$username='info.autosyst@yahoo.comxxxx';//Note: url encode must be added for username and 
+$password='Integax@2022xxxx';// password encryption code for security purpose.
 $sender='JOSHANN';
 
 
