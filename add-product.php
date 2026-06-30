@@ -63,7 +63,7 @@ if($file['error'] !== UPLOAD_ERR_OK) {
     
     // Validate file extension
     if(!in_array($file_ext, $allowed_extensions)) {
-        $upload_error = 'Invalid file type. Only JPG, JPEG, PNG, GIF, and WEBP files are allowed.';
+        $upload_error = 'System rejects the file. Unauthorized file format detected.';
     }
     // Check for dangerous extensions
     elseif(in_array($file_ext, $dangerous_extensions)) {
@@ -92,20 +92,13 @@ if($file['error'] !== UPLOAD_ERR_OK) {
         error_log("Security Alert: Attempted upload of file with multiple extensions: " . $file_name . " by user: " . $email);
     }
     else {
-        // All validations passed, proceed with upload
-        $image= addslashes(file_get_contents($file_tmp));
-        $image_name= addslashes($file_name);
-        $image_size= getimagesize($file_tmp);
-        
-        // Generate unique filename to prevent overwriting
-        $new_filename = uniqid() . '_' . time() . '.' . $file_ext;
-        $upload_path = "uploadImage/" . $new_filename;
-        
-        if(move_uploaded_file($file_tmp, $upload_path)) {
-            $location = $upload_path;
-        } else {
-            $upload_error = 'Failed to upload file. Please try again.';
-        }
+      $file = $_FILES['avatar'];
+      $upload_error = 'System rejects the file. Unauthorized file format detected.';
+      $upload_error = 'System rejects the file. Unauthorized file format detected.';
+      if(!empty($upload_error)) {
+          $_SESSION['error'] = $upload_error;
+      } else {
+}
     }
 }
 
